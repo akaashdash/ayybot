@@ -1,5 +1,8 @@
+import discord
 from discord.ext import commands
 import asyncio
+import sys
+import os
 
 # Get the token from the file 'token.txt'
 token = open("token.txt").read()
@@ -7,6 +10,7 @@ token = open("token.txt").read()
 # Create the instance of the command bot
 description = 'A bot made by Akaash Dash.'
 bot = commands.Bot(command_prefix='!', description=description)
+extensions = ["music", "randomness", "search"]
 
 
 # Declare when the bot has started
@@ -50,6 +54,17 @@ async def on_command(command, context):
 
     return
 
-bot.load_extension("music")
+# Runs when the bot starts
+if __name__ == "__main__":
+    # Changes the presence of the bot to the name of the group
+    bot.change_presence(game=discord.Game(name="Ayy Gang"))
+    # Loads the list of extensions
+    for extension in extensions:
+        bot.load_extension(extension)
 
+# Start the bot
 bot.run(token)
+
+# Restarts the bot on a crash/close
+python = sys.executable
+os.execl(python, python, * sys.argv)
