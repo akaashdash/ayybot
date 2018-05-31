@@ -47,7 +47,8 @@ async def on_command(command, context):
     # Alerts the user that they must only execute bot commands in the 'bot' channel if it was not already
     if message.channel.name != 'bot':
         await bot.delete_message(message)
-        channel = next((channel for channel in message.server.channels if channel.name == 'bot'), None)
+        channel = next(
+            (channel for channel in message.server.channels if channel.name == 'bot'), None)
         say = "You may only use bot commands in this channel, **{0.mention}**."
         await bot.send_message(channel, say.format(message.author))
         return

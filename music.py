@@ -73,11 +73,14 @@ class VoiceState:
             self.current.player.start()
             playing = self.current.player
             requester = self.current.requester
-            embed = discord.Embed(title="Now Playing", url=playing.url, timestamp=datetime.now(), color=0xFFA500)
+            embed = discord.Embed(
+                title="Now Playing", url=playing.url, timestamp=datetime.now(), color=0xFFA500)
             embed.add_field(name="Title", value=playing.title, inline=True)
             embed.add_field(name="By", value=playing.uploader, inline=True)
-            embed.add_field(name="Length", value="{0[0]}m {0[1]}s".format(divmod(playing.duration, 60)), inline=True)
-            embed.set_footer(text="Queued by @{0.name}".format(requester), icon_url=requester.avatar_url)
+            embed.add_field(name="Length", value="{0[0]}m {0[1]}s".format(
+                divmod(playing.duration, 60)), inline=True)
+            embed.set_footer(text="Queued by @{0.name}".format(
+                requester), icon_url=requester.avatar_url)
             await self.bot.send_message(self.current.channel, embed=embed)
             await self.play_next_song.wait()
 
@@ -87,6 +90,7 @@ class Music:
     """
     Commands to control the music bot.
     """
+
     def __init__(self, bot):
         self.bot = bot
         self.voice_states = {}
@@ -117,14 +121,17 @@ class Music:
             await self.create_voice_client(channel)
         except discord.InvalidArgument:
             # Invalid channel specified
-            embed = discord.Embed(description="Invalid channel specified.", color=0xFF0000)
+            embed = discord.Embed(
+                description="Invalid channel specified.", color=0xFF0000)
             await self.bot.send_message(ctx.message.channel, embed=embed)
         except discord.ClientException:
             # Can't join two channels at the same time
-            embed = discord.Embed(description="Music is already playing in a voice channel.", color=0xFF0000)
+            embed = discord.Embed(
+                description="Music is already playing in a voice channel.", color=0xFF0000)
             await self.bot.send_message(ctx.message.channel, embed=embed)
         else:
-            embed = discord.Embed(description=":small_orange_diamond:Now playing music in **{0.name}**.".format(channel), color=0xFFA500)
+            embed = discord.Embed(
+                description=":small_orange_diamond:Now playing music in **{0.name}**.".format(channel), color=0xFFA500)
             await self.bot.send_message(ctx.message.channel, embed=embed)
 
     # Joins the voice channel which the command executor is in
@@ -136,7 +143,8 @@ class Music:
         summoned_channel = ctx.message.author.voice_channel
         if summoned_channel is None:
             # Can't join the author's voice channel if he isn't in one
-            embed = discord.Embed(description="You are not in a voice channel.", color=0xFF0000)
+            embed = discord.Embed(
+                description="You are not in a voice channel.", color=0xFF0000)
             await self.bot.send_message(ctx.message.channel, embed=embed)
             return False
 
@@ -157,7 +165,8 @@ class Music:
         # Gets the first result from a youtube search of the specified query
         def youtube(query: str):
             not_video = True
-            url = 'https://youtube.com/results?search_query=' + query.replace(" ", "+")
+            url = 'https://youtube.com/results?search_query=' + \
+                query.replace(" ", "+")
             # Get results of youtube video search
             r = requests.get(url).text
             soup = BeautifulSoup(r, "html.parser")
@@ -204,11 +213,14 @@ class Music:
             entry = QueueEntry(ctx.message, player)
             playing = entry.player
             requester = entry.requester
-            embed = discord.Embed(title="Added To Queue", url=playing.url, timestamp=datetime.now(), color=0xFFA500)
+            embed = discord.Embed(
+                title="Added To Queue", url=playing.url, timestamp=datetime.now(), color=0xFFA500)
             embed.add_field(name="Title", value=playing.title, inline=True)
             embed.add_field(name="By", value=playing.uploader, inline=True)
-            embed.add_field(name="Length", value="{0[0]}m {0[1]}s".format(divmod(playing.duration, 60)), inline=True)
-            embed.set_footer(text="Added by @{0.name}".format(requester), icon_url=requester.avatar_url)
+            embed.add_field(name="Length", value="{0[0]}m {0[1]}s".format(
+                divmod(playing.duration, 60)), inline=True)
+            embed.set_footer(text="Added by @{0.name}".format(
+                requester), icon_url=requester.avatar_url)
             await self.bot.send_message(entry.channel, embed=embed)
             await state.songs.put(entry)
 
@@ -225,10 +237,12 @@ class Music:
             state.volume = volume
             if state.is_playing():
                 state.player.volume = volume
-            embed = discord.Embed(description=":small_orange_diamond:Set the volume to **{:.0%}**.".format(volume), color=0xFFA500)
+            embed = discord.Embed(
+                description=":small_orange_diamond:Set the volume to **{:.0%}**.".format(volume), color=0xFFA500)
             await self.bot.send_message(ctx.message.channel, embed=embed)
         else:
-            embed = discord.Embed(description="There was an error while attempting to change the volume.", color=0xFF0000)
+            embed = discord.Embed(
+                description="There was an error while attempting to change the volume.", color=0xFF0000)
             await self.bot.send_message(ctx.message.channel, embed=embed)
 
     @commands.command(pass_context=True, no_pm=True)
@@ -240,7 +254,8 @@ class Music:
         if state.is_playing():
             player = state.player
             player.pause()
-            embed = discord.Embed(description=":small_orange_diamond:Music has been **paused**.", color=0xFFA500)
+            embed = discord.Embed(
+                description=":small_orange_diamond:Music has been **paused**.", color=0xFFA500)
             await self.bot.send_message(ctx.message.channel, embed=embed)
 
     @commands.command(aliases=["unpause"], pass_context=True, no_pm=True)
@@ -252,7 +267,8 @@ class Music:
         if state.is_playing():
             player = state.player
             player.resume()
-            embed = discord.Embed(description=":small_orange_diamond:Music has been **resumed**.", color=0xFFA500)
+            embed = discord.Embed(
+                description=":small_orange_diamond:Music has been **resumed**.", color=0xFFA500)
             await self.bot.send_message(ctx.message.channel, embed=embed)
 
     @commands.command(pass_context=True, no_pm=True)
@@ -307,17 +323,20 @@ class Music:
         """
         state = self.get_voice_state(ctx.message.server)
         if not state.is_playing():
-            embed = discord.Embed(description="No music is currently playing.", color=0xFF0000)
+            embed = discord.Embed(
+                description="No music is currently playing.", color=0xFF0000)
             await self.bot.send_message(ctx.message.channel, embed=embed)
             return
 
         voter = ctx.message.author
         if voter == state.current.requester:
-            embed = discord.Embed(description=":small_orange_diamond:The person who queued the song skipped the song.", color=0xFFA500)
+            embed = discord.Embed(
+                description=":small_orange_diamond:The person who queued the song skipped the song.", color=0xFFA500)
             await self.bot.send_message(ctx.message.channel, embed=embed)
             state.skip()
         elif ctx.message.channel.permissions_for(voter).administrator:
-            embed = discord.Embed(description=":small_orange_diamond:An admin has skipped the song.", color=0xFFA500)
+            embed = discord.Embed(
+                description=":small_orange_diamond:An admin has skipped the song.", color=0xFFA500)
             await self.bot.send_message(ctx.message.channel, embed=embed)
             state.skip()
         elif voter not in state.skip_votes:
@@ -331,14 +350,17 @@ class Music:
                 total = total + 1
             required = int(total / 2)
             if count >= required:
-                embed = discord.Embed(description=":small_orange_diamond:Majority has voted to skip the song.", color=0xFFA500)
+                embed = discord.Embed(
+                    description=":small_orange_diamond:Majority has voted to skip the song.", color=0xFFA500)
                 await self.bot.send_message(ctx.message.channel, embed=embed)
                 state.skip()
             else:
-                embed = discord.Embed(description=":small_orange_diamond:Voted to skip, current votes: **{0}/{1}**.".format(count, required), color=0xFFA500)
+                embed = discord.Embed(
+                    description=":small_orange_diamond:Voted to skip, current votes: **{0}/{1}**.".format(count, required), color=0xFFA500)
                 await self.bot.send_message(ctx.message.channel, embed=embed)
         else:
-            embed = discord.Embed(description="You have already voted to skip the song.", color=0xFF0000)
+            embed = discord.Embed(
+                description="You have already voted to skip the song.", color=0xFF0000)
             await self.bot.send_message(ctx.message.channel, embed=embed)
 
     @commands.command(pass_context=True, no_pm=True)
@@ -348,7 +370,8 @@ class Music:
         """
         state = self.get_voice_state(ctx.message.server)
         if state.current is None:
-            embed = discord.Embed(description="No music is currently playing.", color=0xFF0000)
+            embed = discord.Embed(
+                description="No music is currently playing.", color=0xFF0000)
             await self.bot.send_message(ctx.message.channel, embed=embed)
         else:
             count = len(state.skip_votes)
@@ -358,12 +381,16 @@ class Music:
             required = int(total / 2)
             playing = state.player
             requester = state.current.requester
-            embed = discord.Embed(title="Now Playing", url=playing.url, timestamp=datetime.now(), color=0xFFA500)
+            embed = discord.Embed(
+                title="Now Playing", url=playing.url, timestamp=datetime.now(), color=0xFFA500)
             embed.add_field(name="Title", value=playing.title, inline=True)
             embed.add_field(name="By", value=playing.uploader, inline=True)
-            embed.add_field(name="Length", value="{0[0]}m {0[1]}s".format(divmod(playing.duration, 60)), inline=True)
-            embed.add_field(name="Skips", value="**{0}**/{1}".format(count, required), inline=True)
-            embed.set_footer(text="Queued by @{0.name}".format(requester), icon_url=requester.avatar_url)
+            embed.add_field(name="Length", value="{0[0]}m {0[1]}s".format(
+                divmod(playing.duration, 60)), inline=True)
+            embed.add_field(
+                name="Skips", value="**{0}**/{1}".format(count, required), inline=True)
+            embed.set_footer(text="Queued by @{0.name}".format(
+                requester), icon_url=requester.avatar_url)
             await self.bot.send_message(state.current.channel, embed=embed)
 
 
